@@ -1,0 +1,124 @@
+# CREATION OF Patients table
+CREATE TABLE Patients (
+       patient_id INT PRIMARY KEY,
+       name VARCHAR(100),
+       age INT,
+       gender VARCHAR(10)
+    );
+
+
+# CREATION OF Doctors table
+CREATE TABLE Doctors (
+       doctor_id INT PRIMARY KEY,
+       name VARCHAR(100),
+       specialization VARCHAR(100)
+   );
+
+
+# CREATION OF Appointments table
+CREATE TABLE Appointments (
+    appointment_id INT PRIMARY KEY,
+    patient_id INT,
+    doctor_id INT,
+    appointment_date DATE,
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id)
+);
+
+# CREATION OF Treatments table
+CREATE TABLE Treatments (
+    treatment_id INT PRIMARY KEY,
+    patient_id INT,
+    diagnosis VARCHAR(100),
+    cost DECIMAL(10,2),
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
+);  
+
+#Insertion of records into Patients Table
+INSERT INTO Patients VALUES (1, 'Ravi', 25, 'Male')
+(2, 'Sita', 30, 'Female');
+ (3, 'Arjun', 40, 'Male')
+ (4, 'Priya', 28, 'Female')
+ (5, 'Kiran', 35, 'Male');
+ (6, 'Anjali', 22, 'Female')
+ (7, 'Rahul', 45, 'Male')
+ (8, 'Sneha', 32, 'Female')
+ (9, 'Vikram', 50, 'Male')
+ (10, 'Pooja', 27, 'Female');
+
+
+#Insertion of records into Doctors Table
+INSERT INTO Doctors VALUES (101, 'Dr. Sharma', 'Cardiology')
+ (102, 'Dr. Reddy', 'Orthopedics')
+ (103, 'Dr. Kumar', 'Neurology')
+ (104, 'Dr. Mehta', 'Dermatology')
+ (105, 'Dr. Singh', 'General Medicine');
+
+#Insertion of records into Appointments table
+INSERT INTO Appointments VALUES (1, 1, 101, TO_DATE('2025-01-01','YYYY-MM-DD'))
+ (2, 2, 101, TO_DATE('2025-01-05','YYYY-MM-DD'))
+ (3, 3, 101, TO_DATE('2025-02-10','YYYY-MM-DD'))
+ (4, 4, 101, TO_DATE('2025-02-15','YYYY-MM-DD'))
+ (5, 5, 101, TO_DATE('2025-03-01','YYYY-MM-DD'))
+ (6, 6, 102, TO_DATE('2025-01-12','YYYY-MM-DD'))
+ (7, 7, 102, TO_DATE('2025-02-18','YYYY-MM-DD'))
+ (8, 8, 102, TO_DATE('2025-03-20','YYYY-MM-DD'))
+ (9, 9, 103, TO_DATE('2025-01-25','YYYY-MM-DD'))
+ (10, 10, 104, TO_DATE('2025-02-28','YYYY-MM-DD'))
+ (11, 1, 105, TO_DATE('2025-03-25','YYYY-MM-DD'));
+
+
+
+
+#Insertion of records into Treatments table
+INSERT INTO Treatments VALUES (1, 1, 'Fever', 500)
+ (2, 2, 'Fever', 600)
+ (3, 3, 'Fever', 550)
+ (4, 4, 'Fever', 650)
+ (5, 5, 'Fracture', 3000)
+ (6, 6, 'Fracture', 2800)
+ (7, 7, 'Heart Issue', 5000)
+ (8, 8, 'Heart Issue', 5200)
+ (9, 9, 'Asthma', 2500)
+ (10, 10, 'Skin Allergy', 800);
+
+#To save the data 
+Commit
+
+
+#Find most consulted doctors
+SELECT d.name, COUNT(a.appointment_id) AS total_visits
+FROM Doctors d
+JOIN Appointments a ON d.doctor_id = a.doctor_id
+GROUP BY d.name
+ORDER BY total_visits DESC;
+
+#Calculate Total revenue per month
+SELECT TO_CHAR(appointment_date, 'MM') AS month,
+       SUM(t.cost) AS total_revenue
+FROM Appointments a
+JOIN Treatments t ON a.patient_id = t.patient_id
+GROUP BY TO_CHAR(appointment_date, 'MM');
+
+# Identify most common diseases
+SELECT diagnosis, COUNT(*) AS frequency
+FROM Treatments
+GROUP BY diagnosis
+ORDER BY frequency DESC;
+
+
+#Track patient visit frequency
+SELECT p.name, COUNT(a.appointment_id) AS visits
+FROM Patients p
+JOIN Appointments a ON p.patient_id = a.patient_id
+GROUP BY p.name
+ORDER BY visits DESC;
+
+
+#Analyze doctor performance
+SELECT d.name,
+       COUNT(a.appointment_id) AS total_patients
+FROM Doctors d
+LEFT JOIN Appointments a ON d.doctor_id = a.doctor_id
+GROUP BY d.name
+ORDER BY total_patients DESC;
